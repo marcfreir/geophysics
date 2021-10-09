@@ -4,6 +4,8 @@
 # Created on: October 8, 2021
 # Last update: October 8, 2021
 
+import matplotlib.pyplot as plt
+
 print("\nStarting point...")
 
 """
@@ -59,6 +61,11 @@ print("\nEnd point...")
 
 # c)
 x = [0,1,2,3,4,5]
+y = []
 for e in x:
-    y = (2*(e**2)+1)
-    print(y)
+    y_x = (2*(e**2)+1)
+    y.append(y_x)
+    print(y[e])
+
+plt.plot(x, y)
+plt.show()
