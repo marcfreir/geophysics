@@ -30,8 +30,6 @@ division = (sumValues/4)
 
 print("%f"%division)
 
-print("\nEnd point...")
-
 # b)
 """
  1: go to the bus station
@@ -69,3 +67,5 @@ for e in x:
 
 plt.plot(x, y)
 plt.show()
+
+print("\nEnd point...")

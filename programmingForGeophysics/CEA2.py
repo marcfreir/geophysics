@@ -26,7 +26,7 @@ c) The multiplication of the third variable squared by the first variable cubed.
 
 # 1.
 ## a)
-print(((32/((2**3)+1)))+8)
+print((32/((2**3)+1))+8)
 print("\n")
 ## b)
 print((((3**2)-(2))/(37**(1/2)))+((8)/((34**(1/3))-1)))
