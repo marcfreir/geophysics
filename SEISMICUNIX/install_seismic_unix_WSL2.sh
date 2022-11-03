@@ -1,14 +1,39 @@
+#####################################################
+## Shell Script for installing SISMIC UN*X on WSL2 ##
+##    Created by Marc Freir - November 2, 2022     ##
+#####################################################
+
+#! /usr/bin/env bash
+# Set menu color to green
+RED="\e[31m"
+MAGENTA="\e[35m"
+LIGHTYELLOW="\e[93m"
+ENDCOLOR="\e[0m"
+
+# Home
+# Make bash to be able to send the graphics to Xming
+echo "export DISPLAY=:0" >> .bashrc
+source .bashrc
+
+sudo apt install -y x11-apps
+
+echo "export CWPROOT=\$HOME" >> .bashrc
+echo "export PATH=\$PATH:\$HOME/bin:./" >> .bashrc
+source .bashrc
+
+
+
 #!/bin/sh
 
 # Check if the user has all necessary programs
 if ! [ -x "$(command -v wget)" ]; then
-    printf "ERROR: wget must be installed. You can install it by running this command\n"
+    printf "${RED}ERROR: wget must be installed. You can install it by running this command${ENDCOLOR}\n"
     printf "\n$ sudo apt install -y wget\n\n"
     exit 1
 fi
 
 # (WARNING) When setting the variables:
-# - Do not use tilde expasion ~
+# - Do not use tilde expansion ~
 # - Do not end a directory path with a forward slash /
 # - If the file or directory has restricted access, run this script as superuser
 
@@ -21,19 +46,19 @@ SHELL_CONFIG_FILE="${HOME}/.bashrc"
 # Setting CWPROOT
 # ---------------
 printf "\n"
-printf "Seismic Unix will be installed into this location:\n"
+printf "${LIGHTYELLOW}Seismic Unix will be installed into this location:${ENDCOLOR}\n"
 printf "%s\n" "${CWPROOT}"
 printf "\n"
-printf "  - Press ENTER to confirm the location\n"
-printf "  - Press CTRL-C to abort the installation\n"
-printf "  - Or specify a different location below\n"
+printf "${LIGHTYELLOW}  - Press ENTER to confirm the location${ENDCOLOR}\n"
+printf "${LIGHTYELLOW}  - Press CTRL-C to abort the installation${ENDCOLOR}\n"
+printf "${LIGHTYELLOW}  - Or specify a different location below${ENDCOLOR}\n"
 printf "\n"
 printf "[%s] >>> " "${CWPROOT}"
 read -r selected_dir
 if [ "${selected_dir}" != "" ]; then
     case "${selected_dir}" in
         *\ *)
-            printf "ERROR: Cannot install into directories with spaces\n" >&2
+            printf "${RED}ERROR: Cannot install into directories with spaces${ENDCOLOR}\n" >&2
             exit 1
             ;;
         *)
@@ -48,19 +73,19 @@ if [ "$SHELL" = '/usr/bin/zsh' ] || [ "$SHELL" = '/bin/zsh' ]; then
     SHELL_CONFIG_FILE="${HOME}/.zshrc"
 fi
 printf "\n"
-printf "This file will be used for setting persistent enviroment variables:\n"
+printf "${LIGHTYELLOW}This file will be used for setting persistent enviroment variables:${ENDCOLOR}\n"
 printf "%s\n" "${SHELL_CONFIG_FILE}"
 printf "\n"
-printf "  - Press ENTER to confirm the location\n"
-printf "  - Press CTRL-C to abort the installation\n"
-printf "  - Or specify a different location below\n"
+printf "${LIGHTYELLOW}  - Press ENTER to confirm the location${ENDCOLOR}\n"
+printf "${LIGHTYELLOW}  - Press CTRL-C to abort the installation${ENDCOLOR}\n"
+printf "${LIGHTYELLOW}  - Or specify a different location below${ENDCOLOR}\n"
 printf "\n"
 printf "[%s] >>> " "${SHELL_CONFIG_FILE}"
 read -r selected_path
 if [ "${selected_path}" != "" ]; then
     case "${selected_path}" in
         *\ *)
-            printf "ERROR: Cannot specify path with spaces\n" >&2
+            printf "${RED}ERROR: Cannot specify path with spaces${ENDCOLOR}\n" >&2
             exit 1
             ;;
         *)
@@ -69,13 +94,13 @@ if [ "${selected_path}" != "" ]; then
     esac
 fi
 
-printf "\nCreating installation directory\n"
+printf "${MAGENTA}\nCreating installation directory${ENDCOLOR}\n"
 if ! mkdir -p "${CWPROOT}"; then
-    printf "ERROR: Could not create directory: %s\n" "${CWPROOT}" >&2
+    printf "${RED}ERROR: Could not create directory: %s${ENDCOLOR}\n" "${CWPROOT}" >&2
     exit 1
 fi
 
-printf "\nInstalling dependencies\n"
+printf "${LIGHTYELLOW}\nInstalling dependencies${ENDCOLOR}\n"
 
 # General
 sudo apt install -y gcc make libc6-dev
@@ -95,16 +120,20 @@ sudo apt update -y
 sudo apt upgrade -y
 
 
-printf "Downloading Seismic Unix\n"
+printf "${LIGHTYELLOW}\nDownloading Seismic Unix${ENDCOLOR}\n"
+# Change for a new version - current version is 44R26
 wget 'https://nextcloud.seismic-unix.org/s/LZpzc8jMzbWG9BZ/download?path=%2F&files=cwp_su_all_44R26.tgz&downloadStartSecret=d0kkx4lkunp' -O cwp_su_all_44R26.tgz
 
-printf "Extracting tarball contents to the installation directory\n"
-tar -xzf cwp_su_all_44R26.tgz -C "$CWPROOT"
+printf "${LIGHTYELLOW}\nExtracting tarball contents to the installation directory${ENDCOLOR}\n"
+#tar -xzf cwp_su_all_44R26.tgz -C "$CWPROOT"
+# Change for a new version - current version is 44R26
+gunzip cwp_su_all_44R26.tgz
+tar -xvf cwp_su_all_44R26.tar -C "$CWPROOT"
 
-printf "\nDownloading preconfigured Makefile.config\n"
+printf "${LIGHTYELLOW}\nDownloading preconfigured Makefile.config${ENDCOLOR}\n"
 wget https://gist.githubusercontent.com/marcfreir/008d3e509947caaa1da32070acffc57f/raw/33c5dbabf5262ecc516f420a618b7df41166ef0b/Makefile.config -O "${CWPROOT}/src/Makefile.config"
 
-printf "\nCompiling programs\n"
+printf "${LIGHTYELLOW}\nCompiling programs${ENDCOLOR}\n"
 cd "${CWPROOT}/src"
 export CWPROOT=$CWPROOT
 # Install needed development packages:
@@ -124,16 +153,30 @@ make xminstall
 # Improved SEGDREAD
 make sfinstall
 
-printf "\nSetting up persistent enviroment variables\n"
+printf "${LIGHTYELLOW}\nSetting up persistent enviroment variables${ENDCOLOR}\n"
 echo "export CWPROOT='${CWPROOT}'" >>"${SHELL_CONFIG_FILE}"
 echo 'export PATH="${PATH}:${CWPROOT}/bin"' >>"${SHELL_CONFIG_FILE}"
 
-printf "\nDone installing\n"
+# Update & Upgrade System
+printf "\nThe system may need to be Updated and Upgraded\n"
+sudo apt update -y
+sudo apt upgrade -y
 
-printf "\nReload your current shell to be able to run the program\n"
-printf "\n$ source %s\n" "${SHELL_CONFIG_FILE}"
+printf "${LIGHTYELLOW}\nDone installing${ENDCOLOR}\n"
 
-printf "\nThen, you can run the following command to test if the installation is working\n"
+printf "${LIGHTYELLOW}\nMaybe you need to reload your current shell to be able to run SU by running the command: exit${ENDCOLOR}\n"
+printf "${MAGENTA}\n$ source %s${ENDCOLOR}\n" "${SHELL_CONFIG_FILE}"
+
+printf "${LIGHTYELLOW}\nAfter exiting this WSL window, then, you can run the following command to test if the installation is working${ENDCOLOR}\n"
 printf "\n$ suplane | suximage title='test'\n\n"
+
+printf "\nYOU NEED TO START XLaunch FIRST AND CHECK Disable access control \n"
+
+
+
+# Finally
+echo "export DISPLAY=:0" >> .bashrc
+echo "export DISPLAY=$(cat /etc/resolv.conf | grep nameserver | awk '{print $2}'):0" >> .bashrc
+source .bashrc
 
 exit 0
