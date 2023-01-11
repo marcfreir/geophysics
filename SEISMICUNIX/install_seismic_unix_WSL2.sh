@@ -170,7 +170,7 @@ printf "${MAGENTA}\n$ source %s${ENDCOLOR}\n" "${SHELL_CONFIG_FILE}"
 printf "${LIGHTYELLOW}\nAfter exiting this WSL window, then, you can run the following command to test if the installation is working${ENDCOLOR}\n"
 printf "\n$ suplane | suximage title='test'\n\n"
 
-printf "\nYOU NEED TO START XLaunch FIRST AND CHECK Disable access control \n"
+### OLD ### printf "\nYOU NEED TO START XLaunch FIRST AND CHECK Disable access control \n"
 
 
 
@@ -179,4 +179,6 @@ echo "export DISPLAY=:0" >> .bashrc
 echo "export DISPLAY=$(cat /etc/resolv.conf | grep nameserver | awk '{print $2}'):0" >> .bashrc
 source .bashrc
 
+xeyes &
+printf "\nAn instance of XEYES should appear. Make shure the mouse pointer is working \n"
 exit 0
