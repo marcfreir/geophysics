@@ -12,7 +12,7 @@ print("\nStarting point...")
 1. Write a algorithm to each exercise:
 a) Calculate the average value for four given numbers.
 b) Go from your home to the campus.
-c) Solve the equation y = 2x² + 1, for values of x, from 0 to 5. Show the graph.
+c) Solve the equation y = 2x² + 1, for values of x, from 0 to 5. Show the plot.
 """
 
 # a)
